@@ -1,14 +1,13 @@
 import javax.swing.*;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.ActiveEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-public class Main extends JFrame implements ActionListener{
+public class Tablet extends JFrame implements ActionListener{
     JLabel label, phone,name,serial,imei;
     JTextField namefield,numberfield,serialfield,imeifield;
     JButton save;
-    public Main(){
+    public Tablet(){
         label=new JLabel("User Registration");
         label.setBounds(100,10,400,50);
         label.setFont(new Font("Arial",Font.BOLD,18));
@@ -69,7 +68,7 @@ public class Main extends JFrame implements ActionListener{
 
     }
     public void actionPerformed(ActionEvent ae){
-        if(ae.getSource()==save){
+        
             String Name=namefield.getText();
             String Imei=imeifield.getText();
             String Serial=serialfield.getText();
@@ -88,9 +87,9 @@ public class Main extends JFrame implements ActionListener{
             }
             else{
                 try{
-                    Databse conn=new Databse();
+                    Database conn=new Database();
                     String query="Insert into Room4 values('"+Name+"','"+Imei+"','"+Serial+"','"+Phone+"')";
-                    conn.statem.executeQuery(query);
+                    conn.statem.executeUpdate(query);
                     JOptionPane.showMessageDialog(rootPane,"Data Stored Successfully");
                 }
                 catch(Exception e){
@@ -99,8 +98,8 @@ public class Main extends JFrame implements ActionListener{
             }
 
         }
-    }
+    
     public static void main(String[] args) throws Exception {
-       new Main();
+       new Tablet();
     }
 }

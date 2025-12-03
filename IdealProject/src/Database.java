@@ -4,11 +4,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
-public class Databse {
+public class Database {
     Connection conn;
     Statement statem;
 
-    public Databse() throws SQLException {
+    public Database() throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql:///IdealTablet", "root", "@Radhakrishna297");
@@ -19,4 +19,5 @@ public class Databse {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Class Not Found", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
 }
