@@ -91,7 +91,7 @@ public class Main extends JFrame implements ActionListener{
                     Databse conn=new Databse();
                     String query="Insert into Room4 values('"+Name+"','"+Imei+"','"+Serial+"','"+Phone+"')";
                     conn.statem.executeQuery(query);
-                    
+                    JOptionPane.showMessageDialog(rootPane,"Data Stored Successfully");
                 }
                 catch(Exception e){
                     e.printStackTrace();
