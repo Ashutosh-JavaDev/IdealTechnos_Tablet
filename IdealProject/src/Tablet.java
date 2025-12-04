@@ -180,7 +180,7 @@ public class Tablet extends JFrame implements ActionListener {
             return;
         }
 
-        saveToDatabase(name, imei, serial, phone);
+        saveToDatabase(formno,name, fatherName,imei, serial, phone);
     }
 
     private boolean validateForm(String formno, String name, String FatherName, String imei, String serial,
@@ -208,10 +208,10 @@ public class Tablet extends JFrame implements ActionListener {
         return true;
     }
 
-    private void saveToDatabase(String name, String imei, String serial, String phone) {
+    private void saveToDatabase(String formno,String name,String fatherName, String imei, String serial, String phone) {
         try {
             Database conn = new Database();
-            String query = "INSERT INTO Room4 VALUES('" + name + "','" + imei + "','" + serial + "','" + phone + "')";
+            String query = "INSERT INTO Room4 VALUES(''"+formno+"'," + name + "','"+fatherName+"','" + imei + "','" + serial + "','" + phone + "')";
             conn.statem.executeUpdate(query);
             showSuccess("Registration Successful", "Your device has been registered successfully!");
             clearForm();
@@ -222,7 +222,9 @@ public class Tablet extends JFrame implements ActionListener {
     }
 
     private void clearForm() {
+        formField.clearField();
         nameField.clearField();
+        fatherField.clearField();
         imeiField.clearField();
         serialField.clearField();
         phoneField.clearField();
