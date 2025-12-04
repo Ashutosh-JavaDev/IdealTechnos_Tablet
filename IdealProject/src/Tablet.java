@@ -33,7 +33,7 @@ public class Tablet extends JFrame implements ActionListener {
     private void initializeFrame() {
         setTitle("Device Registration Portal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(550, 650);
+        setSize(600, 750);
         setLocationRelativeTo(null);
         setResizable(false);
         getContentPane().setBackground(BACKGROUND_COLOR);
@@ -86,7 +86,7 @@ public class Tablet extends JFrame implements ActionListener {
         cardPanel.setBackground(CARD_COLOR);
         cardPanel.setLayout(new BoxLayout(cardPanel, BoxLayout.Y_AXIS));
         cardPanel.setBorder(new EmptyBorder(30, 30, 30, 30));
-        cardPanel.setMaximumSize(new Dimension(470, 400));
+        cardPanel.setMaximumSize(new Dimension(570, 500));
 
         // Form Number
         JPanel formGroup = createFieldGroup("Form Number", "Enter your Form Number");
@@ -153,7 +153,7 @@ public class Tablet extends JFrame implements ActionListener {
         JPanel footer = new JPanel();
         footer.setBackground(BACKGROUND_COLOR);
         footer.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 20));
-        footer.setPreferredSize(new Dimension(550, 80));
+        footer.setPreferredSize(new Dimension(550,80));
 
         saveButton = new StyledButton("Save Registration", SUCCESS_COLOR);
         saveButton.addActionListener(this);
