@@ -1,105 +1,346 @@
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Font;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-public class Tablet extends JFrame implements ActionListener{
-    JLabel label, phone,name,serial,imei;
-    JTextField namefield,numberfield,serialfield,imeifield;
-    JButton save;
-    public Tablet(){
-        label=new JLabel("User Registration");
-        label.setBounds(100,10,400,50);
-        label.setFont(new Font("Arial",Font.BOLD,18));
-        add(label);
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
-        // Name
-        name=new JLabel("Name");
-        name.setBounds(50,70,100,50);
-        name.setFont(new Font("Arial",Font.BOLD,18));
-        add(name);
-        namefield=new JTextField();
-        namefield.setBounds(50,115,150,25);
-        namefield.setFont(new Font("Arial", Font.PLAIN, 14));
-        add(namefield);
-        // Imei
-        imei=new JLabel("IMEI");
-        imei.setBounds(230,70,100,50);
-        imei.setFont(new Font("Arial",Font.BOLD,18));
-        add(imei);
-        imeifield=new JTextField();
-        imeifield.setBounds(230,115,150,25);
-        imeifield.setFont(new Font("Arial", Font.PLAIN, 14));
-        add(imeifield);
+public class Tablet extends JFrame implements ActionListener {
+    private StyledTextField nameField;
+    private StyledTextField imeiField;
+    private StyledTextField serialField;
+    private StyledTextField phoneField;
+    private StyledButton saveButton;
+    private StyledButton clearButton;
 
-        // serial
-        serial=new JLabel("Serial");
-        serial.setBounds(50,135,100,50);
-        serial.setFont(new Font("Arial",Font.BOLD,18));
-        add(serial);
-        serialfield=new JTextField();
-        serialfield.setBounds(50,180,150,25);
-        serialfield.setFont(new Font("Arial", Font.PLAIN, 14));
-        add(serialfield);
-        // Phone
-        phone=new JLabel("Phone");
-        phone.setBounds(230,135,100,50);
-        phone.setFont(new Font("Arial",Font.BOLD,18));
-        add(phone);
-        numberfield=new JTextField();
-        numberfield.setBounds(230,180,150,25);
-        numberfield.setFont(new Font("Arial", Font.PLAIN, 14));
-        add(numberfield);
-        // Button
-        save=new JButton("Save");
-        save.setBounds(150,230,100,30);
-        save.setForeground(Color.white);
-        save.setBackground(Color.gray);
-        add(save);
-        // Action Event
-        save.addActionListener(this);
-        setLocation(450, 100);
-        setTitle("REGISTRATION FORM");
-        setLayout(null);
-        setSize(400,350);
-        getContentPane().setBackground(Color.white);
-        setVisible(true);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
+    private static final Color SECONDARY_COLOR = new Color(52, 152, 219);
+    private static final Color SUCCESS_COLOR = new Color(46, 204, 113);
+    private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
+    private static final Color CARD_COLOR = new Color(255, 255, 255);
+    private static final Color TEXT_COLOR = new Color(33, 33, 33);
+    private static final Color LABEL_COLOR = new Color(52, 73, 94);
 
+    public Tablet() {
+        initializeFrame();
+        createUI();
     }
-    public void actionPerformed(ActionEvent ae){
-        
-            String Name=namefield.getText();
-            String Imei=imeifield.getText();
-            String Serial=serialfield.getText();
-            String Phone=numberfield.getText();
-            if(Name.equals("")){
-                JOptionPane.showMessageDialog(rootPane, "Name is Required");
-            }
-            else if(Imei.equals("")){
-                JOptionPane.showMessageDialog(rootPane, "IMEI Number is Required");
-            }
-            else if(Serial.equals("")){
-                JOptionPane.showMessageDialog(rootPane, "Serial Number is Required");
-            }
-            else if(Phone.equals("")){
-                JOptionPane.showMessageDialog(rootPane, "Phone number is Required");
-            }
-            else{
-                try{
-                    Database conn=new Database();
-                    String query="Insert into Room4 values('"+Name+"','"+Imei+"','"+Serial+"','"+Phone+"')";
-                    conn.statem.executeUpdate(query);
-                    JOptionPane.showMessageDialog(rootPane,"Data Stored Successfully");
+
+    private void initializeFrame() {
+        setTitle("Device Registration Portal");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(550, 650);
+        setLocationRelativeTo(null);
+        setResizable(false);
+        getContentPane().setBackground(BACKGROUND_COLOR);
+        setLayout(new BorderLayout());
+    }
+
+    private void createUI() {
+        JPanel headerPanel = createHeaderPanel();
+        JPanel formPanel = createFormPanel();
+        JPanel footerPanel = createFooterPanel();
+
+        add(headerPanel, BorderLayout.NORTH);
+        add(formPanel, BorderLayout.CENTER);
+        add(footerPanel, BorderLayout.SOUTH);
+
+        setVisible(true);
+    }
+
+    private JPanel createHeaderPanel() {
+        JPanel header = new JPanel();
+        header.setBackground(PRIMARY_COLOR);
+        header.setPreferredSize(new Dimension(550, 90));
+        header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
+        header.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        JLabel titleLabel = new JLabel("Device Registration");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel subtitleLabel = new JLabel("Register your tablet device");
+        subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        subtitleLabel.setForeground(new Color(236, 240, 241));
+        subtitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        header.add(titleLabel);
+        header.add(Box.createVerticalStrut(5));
+        header.add(subtitleLabel);
+
+        return header;
+    }
+
+    private JPanel createFormPanel() {
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(BACKGROUND_COLOR);
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(new EmptyBorder(30, 40, 30, 40));
+
+        JPanel cardPanel = new JPanel();
+        cardPanel.setBackground(CARD_COLOR);
+        cardPanel.setLayout(new BoxLayout(cardPanel, BoxLayout.Y_AXIS));
+        cardPanel.setBorder(new EmptyBorder(30, 30, 30, 30));
+        cardPanel.setMaximumSize(new Dimension(470, 400));
+
+        // Form Number
+        JPanel formGroup = createFieldGroup("Form Number", "Enter your Form Number");
+        nameField = (StyledTextField) formGroup.getComponent(2);
+        cardPanel.add(formGroup);
+        cardPanel.add(Box.createVerticalStrut(20));
+        // Full Name field
+        JPanel nameGroup = createFieldGroup("Full Name", "Enter your full name");
+        nameField = (StyledTextField) nameGroup.getComponent(2);
+        cardPanel.add(nameGroup);
+        cardPanel.add(Box.createVerticalStrut(20));
+        // Father Name
+        JPanel fatherGroup = createFieldGroup("Father's Name", "Enter your Father name");
+        nameField = (StyledTextField) fatherGroup.getComponent(2);
+        cardPanel.add(fatherGroup);
+        cardPanel.add(Box.createVerticalStrut(20));
+        // IMEI field
+        JPanel imeiGroup = createFieldGroup("IMEI Number", "e.g., 123456789012345");
+        imeiField = (StyledTextField) imeiGroup.getComponent(2);
+        cardPanel.add(imeiGroup);
+        cardPanel.add(Box.createVerticalStrut(20));
+
+        // Serial Number field
+        JPanel serialGroup = createFieldGroup("Serial Number", "Enter device serial number");
+        serialField = (StyledTextField) serialGroup.getComponent(2);
+        cardPanel.add(serialGroup);
+        cardPanel.add(Box.createVerticalStrut(20));
+
+        // Phone Number field
+        JPanel phoneGroup = createFieldGroup("Phone Number", "e.g., +1-234-567-8900");
+        phoneField = (StyledTextField) phoneGroup.getComponent(2);
+        cardPanel.add(phoneGroup);
+
+        mainPanel.add(cardPanel);
+        mainPanel.add(Box.createVerticalGlue());
+
+        return mainPanel;
+    }
+
+    private JPanel createFieldGroup(String label, String placeholder) {
+        JPanel group = new JPanel();
+        group.setLayout(new BoxLayout(group, BoxLayout.Y_AXIS));
+        group.setBackground(CARD_COLOR);
+        group.setOpaque(false);
+        group.setMaximumSize(new Dimension(400, 70));
+
+        JLabel fieldLabel = new JLabel(label);
+        fieldLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        fieldLabel.setForeground(LABEL_COLOR);
+        fieldLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        StyledTextField textField = new StyledTextField(placeholder);
+        textField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        textField.setMaximumSize(new Dimension(400, 40));
+
+        group.add(fieldLabel);
+        group.add(Box.createVerticalStrut(8));
+        group.add(textField);
+
+        return group;
+    }
+
+    private JPanel createFooterPanel() {
+        JPanel footer = new JPanel();
+        footer.setBackground(BACKGROUND_COLOR);
+        footer.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 20));
+        footer.setPreferredSize(new Dimension(550, 80));
+
+        saveButton = new StyledButton("Save Registration", SUCCESS_COLOR);
+        saveButton.addActionListener(this);
+
+        clearButton = new StyledButton("Clear Form", new Color(149, 165, 166));
+        clearButton.addActionListener(e -> clearForm());
+
+        footer.add(saveButton);
+        footer.add(clearButton);
+
+        return footer;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String name = nameField.getActualText();
+        String imei = imeiField.getActualText();
+        String serial = serialField.getActualText();
+        String phone = phoneField.getActualText();
+        String formno;
+        String fatherName;
+
+        if (!validateForm(formno, name, fatherName, imei, serial, phone)) {
+            return;
+        }
+
+        saveToDatabase(name, imei, serial, phone);
+    }
+
+    private boolean validateForm(String formno, String name, String FatherName, String imei, String serial,
+            String phone) {
+        if (name.isEmpty()) {
+            showError("Name is Required", "Please enter your full name");
+            nameField.requestFocus();
+            return false;
+        }
+        if (imei.isEmpty()) {
+            showError("IMEI Required", "Please enter your device IMEI number");
+            imeiField.requestFocus();
+            return false;
+        }
+        if (serial.isEmpty()) {
+            showError("Serial Number Required", "Please enter your device serial number");
+            serialField.requestFocus();
+            return false;
+        }
+        if (phone.isEmpty()) {
+            showError("Phone Number Required", "Please enter your phone number");
+            phoneField.requestFocus();
+            return false;
+        }
+        return true;
+    }
+
+    private void saveToDatabase(String name, String imei, String serial, String phone) {
+        try {
+            Database conn = new Database();
+            String query = "INSERT INTO Room4 VALUES('" + name + "','" + imei + "','" + serial + "','" + phone + "')";
+            conn.statem.executeUpdate(query);
+            showSuccess("Registration Successful", "Your device has been registered successfully!");
+            clearForm();
+        } catch (Exception e) {
+            showError("Database Error", "Failed to save registration. Please try again.");
+            e.printStackTrace();
+        }
+    }
+
+    private void clearForm() {
+        nameField.clearField();
+        imeiField.clearField();
+        serialField.clearField();
+        phoneField.clearField();
+        nameField.requestFocus();
+    }
+
+    private void showSuccess(String title, String message) {
+        JOptionPane optionPane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE);
+        optionPane.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        JDialog dialog = optionPane.createDialog(this, title);
+        dialog.setVisible(true);
+    }
+
+    private void showError(String title, String message) {
+        JOptionPane optionPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
+        optionPane.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        JDialog dialog = optionPane.createDialog(this, title);
+        dialog.setVisible(true);
+    }
+
+    public static void main(String[] args) throws Exception {
+        SwingUtilities.invokeLater(() -> new Tablet());
+    }
+}
+
+class StyledTextField extends JTextField {
+    private String placeholder;
+    private boolean isPlaceholder;
+    private final Color PLACEHOLDER_COLOR = new Color(149, 165, 166);
+    private final Color TEXT_COLOR = new Color(33, 33, 33);
+    private final Color BORDER_COLOR = new Color(189, 195, 199);
+    private final Color FOCUS_COLOR = new Color(41, 128, 185);
+
+    public StyledTextField(String placeholder) {
+        this.placeholder = placeholder;
+        this.isPlaceholder = true;
+
+        setText(placeholder);
+        setForeground(PLACEHOLDER_COLOR);
+        setCaretColor(TEXT_COLOR);
+        setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER_COLOR, 1),
+                BorderFactory.createEmptyBorder(10, 12, 10, 12)));
+        setBackground(new Color(245, 246, 247));
+
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (isPlaceholder) {
+                    setText("");
+                    setForeground(TEXT_COLOR);
+                    isPlaceholder = false;
                 }
-                catch(Exception e){
-                    e.printStackTrace();
-                }
+                setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(FOCUS_COLOR, 2),
+                        BorderFactory.createEmptyBorder(10, 12, 10, 12)));
+                setBackground(Color.WHITE);
             }
 
-        }
-    
-    public static void main(String[] args) throws Exception {
-       new Tablet();
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (getText().trim().isEmpty()) {
+                    setText(placeholder);
+                    setForeground(PLACEHOLDER_COLOR);
+                    isPlaceholder = true;
+                    setBackground(new Color(245, 246, 247));
+                }
+                setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(BORDER_COLOR, 1),
+                        BorderFactory.createEmptyBorder(10, 12, 10, 12)));
+            }
+        });
+    }
+
+    public String getActualText() {
+        return isPlaceholder ? "" : super.getText().trim();
+    }
+
+    public void clearField() {
+        setText(placeholder);
+        setForeground(PLACEHOLDER_COLOR);
+        isPlaceholder = true;
+        setBackground(new Color(245, 246, 247));
+    }
+}
+
+class StyledButton extends JButton {
+    private final Color buttonColor;
+    private final Color hoverColor;
+    private boolean isHovered;
+
+    public StyledButton(String text, Color baseColor) {
+        super(text);
+        this.buttonColor = baseColor;
+        this.hoverColor = new Color(
+                Math.min(baseColor.getRed() + 20, 255),
+                Math.min(baseColor.getGreen() + 20, 255),
+                Math.min(baseColor.getBlue() + 20, 255));
+
+        setFont(new Font("Segoe UI", Font.BOLD, 13));
+        setForeground(Color.WHITE);
+        setBackground(buttonColor);
+        setFocusPainted(false);
+        setBorderPainted(false);
+        setContentAreaFilled(false);
+        setOpaque(true);
+        setPreferredSize(new Dimension(140, 45));
+        setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                setBackground(hoverColor);
+                isHovered = true;
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                setBackground(buttonColor);
+                isHovered = false;
+            }
+        });
     }
 }
