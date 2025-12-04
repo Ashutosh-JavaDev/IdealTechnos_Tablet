@@ -7,6 +7,9 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
 public class Tablet extends JFrame implements ActionListener {
+    private StyledTextField formField;
+    private StyledTextField fatherField;
+
     private StyledTextField nameField;
     private StyledTextField imeiField;
     private StyledTextField serialField;
@@ -170,8 +173,8 @@ public class Tablet extends JFrame implements ActionListener {
         String imei = imeiField.getActualText();
         String serial = serialField.getActualText();
         String phone = phoneField.getActualText();
-        String formno;
-        String fatherName;
+        String formno=formField.getActualText();
+        String fatherName=fatherField.getActualText();
 
         if (!validateForm(formno, name, fatherName, imei, serial, phone)) {
             return;
