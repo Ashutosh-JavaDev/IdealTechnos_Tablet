@@ -1,15 +1,15 @@
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.sql.PreparedStatement;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Tablet extends JFrame implements ActionListener {
     private StyledTextField formField;
     private StyledTextField fatherField;
-
     private StyledTextField nameField;
     private StyledTextField imeiField;
     private StyledTextField serialField;
@@ -90,19 +90,22 @@ public class Tablet extends JFrame implements ActionListener {
 
         // Form Number
         JPanel formGroup = createFieldGroup("Form Number", "Enter your Form Number");
-        nameField = (StyledTextField) formGroup.getComponent(2);
+        formField = (StyledTextField) formGroup.getComponent(2); // assign correctly
         cardPanel.add(formGroup);
         cardPanel.add(Box.createVerticalStrut(20));
+
         // Full Name field
         JPanel nameGroup = createFieldGroup("Full Name", "Enter your full name");
         nameField = (StyledTextField) nameGroup.getComponent(2);
         cardPanel.add(nameGroup);
         cardPanel.add(Box.createVerticalStrut(20));
+
         // Father Name
-        JPanel fatherGroup = createFieldGroup("Father's Name", "Enter your Father name");
-        nameField = (StyledTextField) fatherGroup.getComponent(2);
+        JPanel fatherGroup = createFieldGroup("Father's Name", "Enter your Father's name");
+        fatherField = (StyledTextField) fatherGroup.getComponent(2);
         cardPanel.add(fatherGroup);
         cardPanel.add(Box.createVerticalStrut(20));
+
         // IMEI field
         JPanel imeiGroup = createFieldGroup("IMEI Number", "e.g., 123456789012345");
         imeiField = (StyledTextField) imeiGroup.getComponent(2);
@@ -169,25 +172,40 @@ public class Tablet extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        // defensive: ensure fields were created
+        if (formField == null || nameField == null || fatherField == null || imeiField == null || serialField == null || phoneField == null) {
+            showError("Internal Error", "Form fields are not initialized correctly.");
+            return;
+        }
+
+        String formno = formField.getActualText();
         String name = nameField.getActualText();
+        String fatherName = fatherField.getActualText();
         String imei = imeiField.getActualText();
         String serial = serialField.getActualText();
         String phone = phoneField.getActualText();
-        String formno=formField.getActualText();
-        String fatherName=fatherField.getActualText();
 
         if (!validateForm(formno, name, fatherName, imei, serial, phone)) {
             return;
         }
 
-        saveToDatabase(formno,name, fatherName,imei, serial, phone);
+        saveToDatabase(formno, name, fatherName, imei, serial, phone);
     }
 
-    private boolean validateForm(String formno, String name, String FatherName, String imei, String serial,
-            String phone) {
+    private boolean validateForm(String formno, String name, String FatherName, String imei, String serial, String phone) {
+        if (formno.isEmpty()) {
+            showError("Form Number Required", "Please enter the form number");
+            formField.requestFocus();
+            return false;
+        }
         if (name.isEmpty()) {
             showError("Name is Required", "Please enter your full name");
             nameField.requestFocus();
+            return false;
+        }
+        if (FatherName.isEmpty()) {
+            showError("Father's Name Required", "Please enter father's name");
+            fatherField.requestFocus();
             return false;
         }
         if (imei.isEmpty()) {
@@ -208,11 +226,20 @@ public class Tablet extends JFrame implements ActionListener {
         return true;
     }
 
-    private void saveToDatabase(String formno,String name,String fatherName, String imei, String serial, String phone) {
+    private void saveToDatabase(String formno, String name, String fatherName, String imei, String serial, String phone) {
         try {
-            Database conn = new Database();
-            String query = "INSERT INTO Room4 VALUES(''"+formno+"'," + name + "','"+fatherName+"','" + imei + "','" + serial + "','" + phone + "')";
-            conn.statem.executeUpdate(query);
+            Database db = new Database();
+            // It's better to list columns explicitly. Adjust column order to match your table.
+            String query = "INSERT INTO Room4 (Name,IMEI, Serial, Phone,FatherName,ApplicationNo) VALUES(?,?,?,?,?,?)";
+          PreparedStatement pst = db.conn.prepareStatement(query);
+
+            pst.setString(6, formno);
+            pst.setString(1, name);
+            pst.setString(5, fatherName);
+            pst.setString(2, imei);
+            pst.setString(3, serial);
+            pst.setString(4, phone);
+            pst.executeUpdate();
             showSuccess("Registration Successful", "Your device has been registered successfully!");
             clearForm();
         } catch (Exception e) {
@@ -222,13 +249,13 @@ public class Tablet extends JFrame implements ActionListener {
     }
 
     private void clearForm() {
-        formField.clearField();
-        nameField.clearField();
-        fatherField.clearField();
-        imeiField.clearField();
-        serialField.clearField();
-        phoneField.clearField();
-        nameField.requestFocus();
+        if (formField != null) formField.clearField();
+        if (nameField != null) nameField.clearField();
+        if (fatherField != null) fatherField.clearField();
+        if (imeiField != null) imeiField.clearField();
+        if (serialField != null) serialField.clearField();
+        if (phoneField != null) phoneField.clearField();
+        if (formField != null) formField.requestFocus();
     }
 
     private void showSuccess(String title, String message) {
@@ -245,10 +272,13 @@ public class Tablet extends JFrame implements ActionListener {
         dialog.setVisible(true);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Tablet());
     }
 }
+
+/* StyledTextField and StyledButton classes unchanged (same as your original),
+   but include them here to make the file self-contained. */
 
 class StyledTextField extends JTextField {
     private String placeholder;

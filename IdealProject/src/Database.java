@@ -5,19 +5,21 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 public class Database {
-    Connection conn;
-    Statement statem;
+    public Connection conn;
+    public Statement statem;
 
-    public Database() throws SQLException {
+    public Database() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql:///IdealTablet", "root", "@Radhakrishna297");
+            conn = DriverManager.getConnection(
+                "jdbc:mysql:///IdealTablet",
+                "root",
+                "@Radhakrishna297"
+            );
             statem = conn.createStatement();
         }
-
-        catch (ClassNotFoundException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Class Not Found", JOptionPane.ERROR_MESSAGE);
+        catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "DB Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
 }
