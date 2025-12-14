@@ -230,7 +230,7 @@ public class Tablet extends JFrame implements ActionListener {
         try {
             Database db = new Database();
             // It's better to list columns explicitly. Adjust column order to match your table.
-            String query = "INSERT INTO Room3 (Name,IMEI, Serial, Phone,FatherName,ApplicationNo) VALUES(?,?,?,?,?,?)";
+            String query = "INSERT INTO Room5 (Name,IMEI, Serial, Phone,FatherName,ApplicationNo) VALUES(?,?,?,?,?,?)";
           PreparedStatement pst = db.conn.prepareStatement(query);
 
             pst.setString(6, formno);
